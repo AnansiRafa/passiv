@@ -28,20 +28,20 @@ def calculate_content_metrics(content: str) -> dict:
 
 
 def save_content_version(
-    content_id: str, content: str, changes: str = "", metrics: dict = None
+    content: str,
+    opportunity: InvestmentOpportunity,
+    changes: str = "",
+    metrics: dict = None
 ) -> ContentVersion:
     metrics = metrics or {}
-    latest = (
-        ContentVersion.objects.filter(content_id=content_id)
-        .order_by("-version")
-        .first()
-    )
-    version = (latest.version if latest else 0) + 1
+
+    latest = ContentVersion.objects.filter(opportunity=opportunity).order_by('-timestamp').first()
+    version = (latest.version + 1) if latest else 1
 
     return ContentVersion.objects.create(
-        content_id=content_id,
-        version=version,
         content=content,
+        version=version,
+        opportunity=opportunity,
         changes=changes,
-        metrics=metrics,
+        metrics=metrics
     )
