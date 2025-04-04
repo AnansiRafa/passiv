@@ -1,1 +1,23 @@
+# Virtual environments
 .venv/
+env/
+venv/
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*.sqlite3
+
+# Django stuff
+*.log
+*.pot
+*.pyc
+*.pyo
+*.db
+*.env
+
+# VS Code
+.vscode/
+
+# macOS
+.DS_Store
