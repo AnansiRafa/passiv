@@ -10,6 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+
+import os
+from dotenv import load_dotenv
 from pathlib import Path
 
 from celery.schedules import crontab
@@ -17,6 +20,7 @@ from celery.schedules import crontab
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(dotenv_path=BASE_DIR / '.env')
 
 
 # Quick-start development settings - unsuitable for production
@@ -24,6 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = "django-insecure-posh&^o)y--(&mv@kf9d1800q-+mb=0)_@_$@r80dat$k688o3"
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

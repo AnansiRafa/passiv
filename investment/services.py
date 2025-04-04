@@ -1,6 +1,7 @@
-# investment/services.py
-
-from .models import InvestmentOpportunity
+from django.conf import settings
+from datetime import datetime
+from .models import InvestmentOpportunity, StockPrice
+import yfinance as yf
 
 
 def create_investment_opportunity(
@@ -19,3 +20,22 @@ def analyze_investment(opportunity: InvestmentOpportunity) -> dict:
     This is a placeholder for real analysis logic.
     """
     return {"mock_score": 0.7, "risk": "moderate", "trend": "stable"}
+
+
+def fetch_and_store_stock_prices(ticker_symbol: str, opportunity: InvestmentOpportunity):
+    ticker = yf.Ticker(ticker_symbol)
+    hist = ticker.history(period="3mo")  # Use 'max' for full history
+
+    for index, row in hist.iterrows():
+        date = index.date()
+        StockPrice.objects.update_or_create(
+            opportunity=opportunity,
+            date=date,
+            defaults={
+                "open": row["Open"],
+                "high": row["High"],
+                "low": row["Low"],
+                "close": row["Close"],
+                "volume": row["Volume"]
+            }
+        )
