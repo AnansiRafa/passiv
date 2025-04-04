@@ -6,7 +6,7 @@ click==8.1.8
 click-didyoumean==0.3.1
 click-plugins==1.1.1
 click-repl==0.3.0
-Django==5.1.7
+Django>=4.2,<5.1
 kombu==5.5.2
 prompt_toolkit==3.0.50
 python-dateutil==2.9.0.post0
@@ -16,3 +16,8 @@ sqlparse==0.5.3
 tzdata==2025.2
 vine==5.1.0
 wcwidth==0.2.13
+djangorestframework
+requests
+psycopg2-binary
+openai
+python-decouple

@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'content',
     'investment',
     'affiliate',
+    'crypto',
 ]
 
 MIDDLEWARE = [
