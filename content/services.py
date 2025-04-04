@@ -1,39 +1,47 @@
-import json
+# content/services.py
+
 from .models import ContentVersion
 from investment.models import InvestmentOpportunity
+import json
 
 
-def generate_investment_content(opportunity):
-    """
-    Generates a simple report for an investment opportunity.
-    """
-    content = f"Investment Report for {opportunity.ticker}:\n"
-    content += f"Opportunity: {opportunity.opportunity_name}\n"
-    content += f"Details: {opportunity.description}\n"
-    if opportunity.data:
-        content += "Analysis:\n" + json.dumps(opportunity.data, indent=2)
+def generate_content(opportunity: InvestmentOpportunity) -> str:
+    content = f"""Investment Report
+    
+Ticker: {opportunity.ticker}
+Opportunity: {opportunity.opportunity_name}
+Description: {opportunity.description}
+    
+Analysis:
+{json.dumps(opportunity.data, indent=2)}
+"""
     return content
 
 
-def save_content_version(content_id, content, changes="", metrics=None):
-    """
-    Saves a new version of the content.
-    - Increments the version number.
-    - Stores any changes and metrics (like readability or SEO scores).
-    """
+def calculate_content_metrics(content: str) -> dict:
+    return {
+        "readability_score": 75.0,
+        "seo_score": 80.0,
+        "word_count": len(content.split()),
+        "quality_score": 0.85,
+    }
+
+
+def save_content_version(
+    content_id: str, content: str, changes: str = "", metrics: dict = None
+) -> ContentVersion:
     metrics = metrics or {}
-    # Get the most recent version for this content_id
     latest = (
         ContentVersion.objects.filter(content_id=content_id)
         .order_by("-version")
         .first()
     )
-    new_version = (latest.version if latest else 0) + 1
-    cv = ContentVersion.objects.create(
+    version = (latest.version if latest else 0) + 1
+
+    return ContentVersion.objects.create(
         content_id=content_id,
-        version=new_version,
+        version=version,
         content=content,
         changes=changes,
         metrics=metrics,
     )
-    return cv

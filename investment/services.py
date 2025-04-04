@@ -1,21 +1,21 @@
+# investment/services.py
+
 from .models import InvestmentOpportunity
 
 
-def analyze_investment(ticker):
-    """
-    Retrieves or creates an investment opportunity and attaches
-    a mock analysis result to its 'data' field.
-    """
-    opportunity, created = InvestmentOpportunity.objects.get_or_create(
-        ticker=ticker,
-        defaults={
-            "opportunity_name": f"Opportunity for {ticker}",
-            "description": "This is a placeholder for detailed investment analysis.",
-            "data": {},
-        },
+def create_investment_opportunity(
+    ticker: str, name: str, description: str
+) -> InvestmentOpportunity:
+    """Create a new or retrieve an existing InvestmentOpportunity."""
+    obj, _ = InvestmentOpportunity.objects.get_or_create(
+        ticker=ticker, defaults={"opportunity_name": name, "description": description}
     )
+    return obj
 
-    # Update the 'data' field with a dummy analysis result
-    opportunity.data = {"analysis": f"Market analysis data for {ticker}"}
-    opportunity.save()
-    return opportunity
+
+def analyze_investment(opportunity: InvestmentOpportunity) -> dict:
+    """
+    Analyze an investment opportunity.
+    This is a placeholder for real analysis logic.
+    """
+    return {"mock_score": 0.7, "risk": "moderate", "trend": "stable"}
