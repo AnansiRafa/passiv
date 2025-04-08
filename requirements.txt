@@ -24,3 +24,5 @@ python-decouple
 pytz
 python-dotenv
 yfinance
+pytest
+pytest-django
