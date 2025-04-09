@@ -29,15 +29,24 @@ def calculate_content_metrics(content: str) -> dict:
 def save_content_version(
     content: str,
     opportunity: InvestmentOpportunity,
+    content_id: str = None,
     changes: str = "",
     metrics: dict = None
 ) -> ContentVersion:
     metrics = metrics or {}
 
-    latest = ContentVersion.objects.filter(opportunity=opportunity).order_by('-timestamp').first()
+    if not content_id:
+        content_id = f"inv_{opportunity.ticker.upper()}"
+
+    latest = (
+        ContentVersion.objects.filter(content_id=content_id)
+        .order_by("-version")
+        .first()
+    )
     version = (latest.version + 1) if latest else 1
 
     return ContentVersion.objects.create(
+        content_id=content_id,
         content=content,
         version=version,
         opportunity=opportunity,
@@ -51,5 +60,6 @@ def create_gpt_content_version(opportunity: InvestmentOpportunity) -> ContentVer
     Generates GPT-powered content, calculates metrics, and stores a new content version.
     """
     content = generate_content_for_asset(opportunity)
+    # print(content)
     metrics = calculate_content_metrics(content)
     return save_content_version(content, opportunity, changes="Initial GPT generation", metrics=metrics)

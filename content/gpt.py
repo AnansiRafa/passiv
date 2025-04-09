@@ -1,8 +1,9 @@
 import os
-import openai
+from openai import OpenAI
+
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 from investment.models import InvestmentOpportunity
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
 
 def generate_content_for_asset(asset: InvestmentOpportunity) -> str:
     """
@@ -27,14 +28,12 @@ def generate_content_for_asset(asset: InvestmentOpportunity) -> str:
     if asset.data:
         user_prompt += f"Additional Data: {asset.data}\n"
 
-    response = openai.ChatCompletion.create(
-        model="gpt-4o",
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt}
-        ],
-        temperature=0.7,
-        max_tokens=1024
-    )
+    response = client.chat.completions.create(model="gpt-4o",
+    messages=[
+        {"role": "system", "content": system_prompt},
+        {"role": "user", "content": user_prompt}
+    ],
+    temperature=0.7,
+    max_tokens=1024)
 
-    return response["choices"][0]["message"]["content"].strip()
+    return response.choices[0].message.content.strip()
