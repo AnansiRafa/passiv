@@ -3,6 +3,8 @@
 from .models import ContentVersion
 from investment.models import InvestmentOpportunity
 import json
+from .gpt import generate_content_for_asset
+
 
 
 def generate_content(opportunity: InvestmentOpportunity) -> str:
