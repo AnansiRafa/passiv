@@ -1,7 +1,8 @@
 from .models import ContentVersion
 from investment.models import InvestmentOpportunity
+from crypto.models import CryptoAsset
 import json
-from .gpt import generate_content_for_asset
+from .gpt import generate_content_for_asset, generate_content_for_crypto_asset
 
 
 def generate_content(opportunity: InvestmentOpportunity) -> str:
@@ -28,7 +29,8 @@ def calculate_content_metrics(content: str) -> dict:
 
 def save_content_version(
     content: str,
-    opportunity: InvestmentOpportunity,
+    opportunity: InvestmentOpportunity = None,
+    crypto_asset: CryptoAsset = None,
     content_id: str = None,
     changes: str = "",
     metrics: dict = None
@@ -36,7 +38,12 @@ def save_content_version(
     metrics = metrics or {}
 
     if not content_id:
-        content_id = f"inv_{opportunity.ticker.upper()}"
+        if opportunity:
+            content_id = f"inv_{opportunity.ticker.upper()}"
+        elif crypto_asset:
+            content_id = f"crypto_{crypto_asset.symbol.upper()}"
+        else:
+            raise ValueError("Either opportunity or crypto_asset must be provided.")
 
     latest = (
         ContentVersion.objects.filter(content_id=content_id)
@@ -50,9 +57,11 @@ def save_content_version(
         content=content,
         version=version,
         opportunity=opportunity,
+        crypto_asset=crypto_asset,
         changes=changes,
         metrics=metrics
     )
+
 
 
 def create_gpt_content_version(opportunity: InvestmentOpportunity) -> ContentVersion:
@@ -63,3 +72,20 @@ def create_gpt_content_version(opportunity: InvestmentOpportunity) -> ContentVer
     # print(content)
     metrics = calculate_content_metrics(content)
     return save_content_version(content, opportunity, changes="Initial GPT generation", metrics=metrics)
+
+
+def create_gpt_content_version_for_crypto(asset: CryptoAsset) -> ContentVersion:
+    """
+    Generate and store GPT-powered content for a CryptoAsset.
+    """
+    content = generate_content_for_crypto_asset(asset)
+    metrics = calculate_content_metrics(content)
+
+    return save_content_version(
+        content=content,
+        opportunity=None,
+        crypto_asset=asset,
+        content_id=f"crypto_{asset.symbol.upper()}",
+        changes="Initial GPT crypto generation",
+        metrics=metrics
+    )

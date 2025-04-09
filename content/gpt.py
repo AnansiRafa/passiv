@@ -3,6 +3,8 @@ from openai import OpenAI
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 from investment.models import InvestmentOpportunity
+from crypto.models import CryptoAsset
+
 
 
 def generate_content_for_asset(asset: InvestmentOpportunity) -> str:
@@ -35,5 +37,40 @@ def generate_content_for_asset(asset: InvestmentOpportunity) -> str:
     ],
     temperature=0.7,
     max_tokens=1024)
+
+    return response.choices[0].message.content.strip()
+
+
+def generate_content_for_crypto_asset(asset: CryptoAsset) -> str:
+    """
+    Generate investment content using GPT-4o for a given CryptoAsset.
+    Returns plain text content ready for rendering or storing.
+    """
+
+    system_prompt = (
+        "You are a skilled crypto analyst and financial writer. "
+        "Write a high-quality investment summary for the following cryptocurrency. "
+        "Include its utility, market rank, and broader significance. "
+        "Avoid offering financial advice."
+    )
+
+    user_prompt = (
+        f"Crypto Name: {asset.name}\n"
+        f"Symbol: {asset.symbol}\n"
+        f"Coingecko ID: {asset.coingecko_id}\n"
+    )
+
+    if asset.market_cap_rank is not None:
+        user_prompt += f"Market Cap Rank: {asset.market_cap_rank}\n"
+
+    response = client.chat.completions.create(
+        model="gpt-4o",
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt}
+        ],
+        temperature=0.7,
+        max_tokens=1024
+    )
 
     return response.choices[0].message.content.strip()
