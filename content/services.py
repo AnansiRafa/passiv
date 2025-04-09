@@ -1,19 +1,16 @@
-# content/services.py
-
 from .models import ContentVersion
 from investment.models import InvestmentOpportunity
 import json
 from .gpt import generate_content_for_asset
 
 
-
 def generate_content(opportunity: InvestmentOpportunity) -> str:
     content = f"""Investment Report
-    
+
 Ticker: {opportunity.ticker}
 Opportunity: {opportunity.opportunity_name}
 Description: {opportunity.description}
-    
+
 Analysis:
 {json.dumps(opportunity.data, indent=2)}
 """
@@ -47,3 +44,12 @@ def save_content_version(
         changes=changes,
         metrics=metrics
     )
+
+
+def create_gpt_content_version(opportunity: InvestmentOpportunity) -> ContentVersion:
+    """
+    Generates GPT-powered content, calculates metrics, and stores a new content version.
+    """
+    content = generate_content_for_asset(opportunity)
+    metrics = calculate_content_metrics(content)
+    return save_content_version(content, opportunity, changes="Initial GPT generation", metrics=metrics)
