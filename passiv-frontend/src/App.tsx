@@ -1,12 +1,16 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import ContentFeed from "./components/ContentFeed";
+import ContentDetail from "./components/ContentDetail";
 
-export default function App() {
+function App(): JSX.Element {
   return (
-    <div className="min-h-screen bg-gray-900 text-white flex items-center justify-center">
-      <h1 className="text-4xl font-bold">Hello Tailwind</h1>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<ContentFeed />} />
+        <Route path="/content/:id" element={<ContentDetail />} />
+      </Routes>
+    </Router>
   );
 }
+
+export default App;
