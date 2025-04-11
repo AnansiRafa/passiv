@@ -1,4 +1,15 @@
 {
+  "compilerOptions": {
+    "jsx": "react-jsx",          // ← Required for React 17+
+    "module": "esnext",
+    "target": "esnext",
+    "moduleResolution": "node",
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "noEmit": true,
+  },
   "files": [],
   "references": [
     { "path": "./tsconfig.app.json" },
