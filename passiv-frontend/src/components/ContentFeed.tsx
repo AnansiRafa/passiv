@@ -1,59 +1,51 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-
-import { BASE_API_URL } from "../config";
-
+import React, { useEffect, useState } from 'react';
 
 interface ContentItem {
   id: number;
   version: number;
-  timestamp: string;
-  opportunity_name?: string;
-  content?: string;
+  content: string;
+  opportunity?: {
+    ticker: string;
+    opportunity_name: string;
+  };
 }
 
-const ContentFeed = (): JSX.Element => {
+const ContentFeed: React.FC = () => {
   const [contentItems, setContentItems] = useState<ContentItem[]>([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchContent = async () => {
-      try {
-        const response = await fetch(`${BASE_API_URL}/api/content/`);
-        const data = await response.json();
-        console.log("Fetched data:", data); 
-        setContentItems(data);
-      } catch (error) {
-        console.error("Failed to fetch content:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchContent();
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/api/content/`)
+      .then((res) => res.json())
+      .then((data) => setContentItems(data));
   }, []);
 
-  if (loading) {
-    return <div className="text-center p-8 text-gray-500">Loading content...</div>;
-  }
-
   return (
-    <div className="p-8 max-w-6xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6 text-center">📚 Investment Insights</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {contentItems.map((item) => (
-          <Link
-            to={`/content/${item.id}`}
-            key={item.id}
-            className="block p-6 bg-white rounded-xl shadow hover:shadow-lg transition-all border border-gray-100"
-          >
-            <h2 className="text-xl font-semibold mb-2">{item.opportunity_name || "Untitled"}</h2>
-            <p className="text-sm text-gray-600 mb-1">
-              Version: v{item.version} • {new Date(item.timestamp).toLocaleDateString()}
-            </p>
-            <p className="text-sm text-gray-500 line-clamp-3">{item.content}</p>
-          </Link>
-        ))}
+    <div className="bg-gray-50 min-h-screen py-10 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-3xl font-bold text-center text-gray-900 mb-10">
+          Investment Insights
+        </h1>
+        {contentItems.length === 0 ? (
+          <p className="text-center text-gray-500">No content available.</p>
+        ) : (
+          contentItems.map((item) => (
+            <div
+              key={item.id}
+              className="bg-white shadow-md rounded-2xl p-6 mb-6 border border-gray-200"
+            >
+              <h2 className="text-xl font-semibold text-gray-900">
+                {item.opportunity?.opportunity_name || 'Untitled'}{' '}
+                <span className="text-sm text-gray-500">
+                  ({item.opportunity?.ticker || 'N/A'})
+                </span>
+              </h2>
+              <p className="text-sm text-gray-400 mb-4">v{item.version}</p>
+              <p className="text-gray-700 line-clamp-4 whitespace-pre-line leading-relaxed text-base">
+                {item.content}
+              </p>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );

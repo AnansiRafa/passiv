@@ -1,64 +1,17 @@
-import { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import React from 'react';
 
-interface ContentItem {
-  id: number;
+interface ContentDetailProps {
+  title: string;
   version: number;
-  timestamp: string;
-  opportunity_name?: string;
-  content?: string;
+  body: string;
 }
 
-const ContentDetail = (): JSX.Element => {
-  const { id } = useParams();
-  const [contentItem, setContentItem] = useState<ContentItem | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchContent = async () => {
-      try {
-        const response = await fetch(`/api/content/${id}/`);
-        if (!response.ok) {
-          throw new Error("Failed to fetch content detail.");
-        }
-        const data = await response.json();
-        setContentItem(data);
-      } catch (err: any) {
-        setError(err.message || "An error occurred.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchContent();
-  }, [id]);
-
-  if (loading) {
-    return <div className="p-8 text-center text-gray-500">Loading content...</div>;
-  }
-
-  if (error) {
-    return <div className="p-8 text-center text-red-500">Error: {error}</div>;
-  }
-
-  if (!contentItem) {
-    return <div className="p-8 text-center text-gray-400">Content not found.</div>;
-  }
-
+const ContentDetail: React.FC<ContentDetailProps> = ({ title, version, body }) => {
   return (
-    <div className="p-8 max-w-3xl mx-auto">
-      <Link to="/" className="text-blue-500 underline mb-4 block">
-        ← Back to feed
-      </Link>
-
-      <h1 className="text-3xl font-bold mb-2">{contentItem.opportunity_name || "Untitled"}</h1>
-      <p className="text-sm text-gray-600 mb-6">
-        Version v{contentItem.version} • {new Date(contentItem.timestamp).toLocaleDateString()}
-      </p>
-      <article className="prose prose-lg max-w-none">
-        {contentItem.content}
-      </article>
+    <div className="bg-white shadow-lg rounded-2xl p-8 max-w-4xl mx-auto mt-12 border border-gray-200">
+      <h2 className="text-2xl font-bold text-gray-900 mb-1">{title}</h2>
+      <p className="text-sm text-gray-500 mb-6">Version {version}</p>
+      <article className="prose max-w-none prose-gray">{body}</article>
     </div>
   );
 };
