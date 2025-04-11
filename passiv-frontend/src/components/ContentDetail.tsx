@@ -1,17 +1,51 @@
-import React from 'react';
+import { useEffect, useState } from "react";
+import { useParams, Link } from "react-router-dom";
 
-interface ContentDetailProps {
-  title: string;
+interface ContentItem {
+  id: number;
   version: number;
-  body: string;
+  timestamp: string;
+  opportunity_name?: string;
+  content?: string;
 }
 
-const ContentDetail: React.FC<ContentDetailProps> = ({ title, version, body }) => {
+const ContentDetail = (): JSX.Element => {
+  const { id } = useParams();
+  const [contentItem, setContentItem] = useState<ContentItem | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(`${import.meta.env.VITE_API_BASE_URL}/api/content/${id}`)
+      .then((res) => res.json())
+      .then((data) => setContentItem(data))
+      .catch((err) => console.error("Failed to fetch detail:", err))
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  if (loading) {
+    return <div className="text-center p-8">Loading content...</div>;
+  }
+
+  if (!contentItem) {
+    return <div className="text-center p-8">Content not found.</div>;
+  }
+
   return (
-    <div className="bg-white shadow-lg rounded-2xl p-8 max-w-4xl mx-auto mt-12 border border-gray-200">
-      <h2 className="text-2xl font-bold text-gray-900 mb-1">{title}</h2>
-      <p className="text-sm text-gray-500 mb-6">Version {version}</p>
-      <article className="prose max-w-none prose-gray">{body}</article>
+    <div className="max-w-3xl mx-auto px-4 py-8">
+      <Link to="/" className="text-blue-600 hover:underline mb-4 inline-block">
+        ← Back to Feed
+      </Link>
+      <h1 className="text-3xl font-bold mb-2">{contentItem.opportunity_name || "Untitled"}</h1>
+      <div className="text-sm text-gray-500 mb-4">
+        Version: v{contentItem.version} • {new Date(contentItem.timestamp).toLocaleDateString()}
+      </div>
+      <div className="prose dark:prose-invert max-w-none">
+        {contentItem.content ? (
+          contentItem.content.split("\n").map((line, index) => <p key={index}>{line}</p>)
+        ) : (
+          <p>No content available.</p>
+        )}
+      </div>
     </div>
   );
 };
