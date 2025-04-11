@@ -1,16 +1,16 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import ReactMarkdown from "react-markdown";
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
 
 interface ContentItem {
   id: number;
-  version: number;
-  timestamp: string;
-  opportunity_name?: string;
-  content?: string;
+  title: string;
+  version: string;
+  created_at: string;
+  content: string;
 }
 
-const ContentFeed = (): JSX.Element => {
+const ContentFeed = () => {
   const [contentItems, setContentItems] = useState<ContentItem[]>([]);
 
   useEffect(() => {
@@ -21,9 +21,10 @@ const ContentFeed = (): JSX.Element => {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6 text-center">
-        📚 Investment Insights
+      <h1 className="text-3xl font-bold mb-6 text-center flex items-center justify-center gap-2">
+        <span role="img" aria-label="books">📚</span> Investment Insights
       </h1>
+
       <div className="space-y-6">
         {contentItems.map((item) => (
           <div
@@ -32,18 +33,18 @@ const ContentFeed = (): JSX.Element => {
           >
             <Link
               to={`/content/${item.id}`}
-              className="text-xl font-semibold text-blue-700 hover:underline"
+              className="text-xl font-semibold text-blue-700 hover:underline block"
             >
-              {item.opportunity_name || "Untitled"}
+              {item.title || 'Untitled'}
             </Link>
 
             <div className="text-sm text-gray-500 mt-1">
-              v{item.version} • {new Date(item.timestamp).toLocaleDateString()}
+              v{item.version || '1'} • {new Date(item.created_at).toLocaleDateString()}
             </div>
 
             <div className="prose prose-sm text-gray-700 mt-4 line-clamp-4">
               <ReactMarkdown>
-                {(item.content?.slice(0, 280) || "") + "..."}
+                {item.content?.slice(0, 480) + '...'}
               </ReactMarkdown>
             </div>
           </div>

@@ -1,55 +1,49 @@
-import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
-import ReactMarkdown from "react-markdown";
+import React, { useEffect, useState } from 'react';
+import { useParams, Link } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
 
 interface ContentItem {
   id: number;
-  version: number;
-  timestamp: string;
-  opportunity_name?: string;
-  content?: string;
+  title: string;
+  version: string;
+  created_at: string;
+  content: string;
 }
 
-const ContentDetail = (): JSX.Element => {
+const ContentDetail = () => {
   const { id } = useParams();
   const [contentItem, setContentItem] = useState<ContentItem | null>(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_BASE_URL}/api/content/${id}/`)
       .then((res) => res.json())
-      .then((data) => {
-        setContentItem(data);
-        setLoading(false);
-      })
-      .catch((error) => {
-        console.error("Failed to fetch content detail:", error);
-        setLoading(false);
-      });
+      .then((data) => setContentItem(data));
   }, [id]);
 
-  if (loading) {
-    return <div className="text-center p-8 text-gray-500">Loading...</div>;
-  }
-
   if (!contentItem) {
-    return <div className="text-center p-8 text-red-500">Content not found.</div>;
+    return <div className="text-center mt-10 text-gray-600">Loading...</div>;
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8">
-      <Link to="/" className="text-blue-600 hover:underline text-sm">
+    <div className="max-w-3xl mx-auto px-4 py-10">
+      <Link
+        to="/"
+        className="text-sm text-blue-600 hover:underline mb-6 inline-block"
+      >
         ← Back to Feed
       </Link>
-      <h1 className="text-3xl font-bold mt-4">
-        {contentItem.opportunity_name || "Untitled"}
+
+      <h1 className="text-3xl font-bold text-center mb-2">
+        {contentItem.title || 'Untitled'}
       </h1>
-      <div className="text-sm text-gray-500 mt-1 mb-4">
-        v{contentItem.version} • {new Date(contentItem.timestamp).toLocaleDateString()}
+
+      <div className="text-center text-sm text-gray-500 mb-6">
+        v{contentItem.version || '1'} • {new Date(contentItem.created_at).toLocaleDateString()}
       </div>
-      <div className="prose max-w-none text-gray-800">
-        <ReactMarkdown>{contentItem.content || ""}</ReactMarkdown>
-      </div>
+
+      <article className="prose max-w-none text-gray-800 mx-auto">
+        <ReactMarkdown>{contentItem.content}</ReactMarkdown>
+      </article>
     </div>
   );
 };
