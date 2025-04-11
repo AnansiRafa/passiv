@@ -33,9 +33,9 @@ const ContentDetail = (): JSX.Element => {
       <p className="text-sm text-gray-500 mb-6">
         Version {contentItem.version} • {new Date(contentItem.timestamp).toLocaleDateString()}
       </p>
-      <article className="prose prose-neutral prose-lg">
+      <div className="prose prose-neutral prose-lg">
         <ReactMarkdown>{contentItem.content || 'No content available.'}</ReactMarkdown>
-      </article>
+      </div>
     </div>
   );
 };
