@@ -6,7 +6,7 @@ interface ContentItem {
   id: number;
   title: string;
   version: string;
-  created_at: string;
+  timestamp: string;
   content: string;
 }
 
@@ -16,7 +16,10 @@ const ContentFeed = () => {
   useEffect(() => {
     fetch(`${import.meta.env.VITE_API_BASE_URL}/api/content/`)
       .then((res) => res.json())
-      .then((data) => setContentItems(data));
+      .then((data) => {
+        // console.log(data)
+        setContentItems(data)
+      });
   }, []);
 
   return (
@@ -38,9 +41,11 @@ const ContentFeed = () => {
               {item.title || 'Untitled'}
             </Link>
 
-            <div className="text-sm text-gray-500 mt-1">
-              v{item.version || '1'} • {new Date(item.created_at).toLocaleDateString()}
-            </div>
+            <span className="text-sm text-gray-500 mt-1">
+              v{item.version} •{" "}
+              {item.timestamp
+              ? new Date(item.timestamp).toLocaleDateString(): "Unknown Date"}
+            </span>
 
             <div className="prose prose-sm text-gray-700 mt-4 line-clamp-4">
               <ReactMarkdown>
