@@ -7,6 +7,9 @@ export default {
     theme: {
       extend: {},
     },
-    plugins: [typography],
+    plugins: [
+        require('@tailwindcss/typography'),
+        require('@tailwindcss/line-clamp'),
+    ],
   }
   
