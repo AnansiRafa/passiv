@@ -3,6 +3,8 @@ from investment.models import InvestmentOpportunity
 from crypto.models import CryptoAsset
 import json
 from .gpt import generate_content_for_asset, generate_content_for_crypto_asset
+from textblob import TextBlob
+import re
 
 
 def generate_content(opportunity: InvestmentOpportunity) -> str:
@@ -18,12 +20,30 @@ Analysis:
     return content
 
 
-def calculate_content_metrics(content: str) -> dict:
+def calculate_content_metrics(text: str) -> dict:
+    """
+    Given a string of content, return a dictionary of content metrics.
+    """
+    word_count = len(text.split())
+
+    # Sentence count via basic punctuation split
+    sentences = re.split(r'[.!?]', text)
+    sentence_count = len([s for s in sentences if s.strip()]) or 1
+
+    # Syllables: rough estimation
+    syllable_count = sum(len(re.findall(r'[aeiouy]+', word.lower())) for word in text.split())
+
+    # Flesch Reading Ease Score
+    readability_score = 206.835 - (1.015 * (word_count / sentence_count)) - (84.6 * (syllable_count / word_count))
+
+    # Sentiment (range: -1 to 1)
+    sentiment = TextBlob(text).sentiment.polarity
+
     return {
-        "readability_score": 75.0,
-        "seo_score": 80.0,
-        "word_count": len(content.split()),
-        "quality_score": 0.85,
+        "word_count": word_count,
+        "sentence_count": sentence_count,
+        "readability_score": round(readability_score, 2),
+        "sentiment": round(sentiment, 3)
     }
 
 

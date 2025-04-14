@@ -6,7 +6,7 @@ interface ContentItem {
   id: number;
   title: string;
   version: string;
-  created_at: string;
+  timestamp: string;
   content: string;
 }
 
@@ -38,7 +38,8 @@ const ContentDetail = () => {
       </h1>
 
       <div className="text-center text-sm text-gray-500 mb-6">
-        v{contentItem.version || '1'} • {new Date(contentItem.created_at).toLocaleDateString()}
+        v{contentItem.version || '1'} • {contentItem.timestamp
+              ? new Date(contentItem.timestamp).toLocaleDateString(): "Unknown Date"}
       </div>
 
       <article className="prose max-w-none text-gray-800 mx-auto">
