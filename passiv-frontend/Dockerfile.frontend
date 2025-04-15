@@ -1,14 +1,19 @@
-FROM node:20
+# Dockerfile for React + Vite frontend
+FROM node:20-alpine
 
 WORKDIR /app
 
-# Copy only package files and install dependencies
+# Copy only package definitions first
 COPY package*.json ./
 
-RUN npm install
+# Force clean esbuild install for correct platform
+RUN npm install --omit=dev && \
+    npm rebuild esbuild --platform=linux --arch=arm64 && \
+    npm install
 
-# Then copy the rest of your frontend source
+# Copy rest of the code
 COPY . .
 
-# Start dev server using local vite
+EXPOSE 5173
+
 CMD ["npm", "run", "dev"]
