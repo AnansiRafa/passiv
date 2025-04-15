@@ -8,7 +8,7 @@ WORKDIR /app
 
 # System deps
 RUN apt-get update && apt-get install -y \
-    netcat gcc libpq-dev curl && \
+    netcat-openbsd gcc libpq-dev curl && \
     apt-get clean
 
 COPY requirements.txt .

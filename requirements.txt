@@ -26,3 +26,6 @@ python-dotenv
 yfinance
 pytest
 pytest-django
+django-cors-headers
+textblob>=0.18
+
