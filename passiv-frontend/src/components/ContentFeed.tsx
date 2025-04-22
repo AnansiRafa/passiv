@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
+import MD from "./Markdown";
 
 interface ContentItem {
   id: number;
@@ -48,9 +49,9 @@ const ContentFeed = () => {
             </span>
 
             <div className="prose prose-sm text-gray-700 mt-4 line-clamp-4">
-              <ReactMarkdown>
+              </MD>
                 {item.content?.slice(0, 480) + '...'}
-              </ReactMarkdown>
+              </MD>
             </div>
           </div>
         ))}

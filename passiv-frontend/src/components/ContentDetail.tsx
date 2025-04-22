@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
+import MD from "./Markdown";
 
 interface ContentItem {
   id: number;
@@ -43,7 +44,7 @@ const ContentDetail = () => {
       </div>
 
       <article className="prose max-w-none text-gray-800 mx-auto">
-        <ReactMarkdown>{contentItem.content}</ReactMarkdown>
+      <MD>{contentItem.content}</MD>
       </article>
     </div>
   );

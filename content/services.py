@@ -1,10 +1,20 @@
 from .models import ContentVersion
 from investment.models import InvestmentOpportunity
+from affiliate.models import AffiliateLink
 from crypto.models import CryptoAsset
 import json
 from .gpt import generate_content_for_asset, generate_content_for_crypto_asset
 from textblob import TextBlob
 import re
+import random
+
+
+
+def choose_affiliate(opportunity=None, crypto_asset=None) -> AffiliateLink | None:
+    """Return a link whose description contains 'stock' or 'crypto'."""
+    tag = "crypto" if crypto_asset else "stock"
+    links = AffiliateLink.objects.filter(description__icontains=tag)
+    return random.choice(links) if links.exists() else None
 
 
 def generate_content(opportunity: InvestmentOpportunity) -> str:
@@ -56,6 +66,13 @@ def save_content_version(
     metrics: dict = None
 ) -> ContentVersion:
     metrics = metrics or {}
+
+    link = choose_affiliate(opportunity, crypto_asset)
+    if link:
+        content += (
+            f"\n\n[Partner link]({link.url}) _(affiliate)_\n"
+            "_Disclosure: we may earn a commission; not financial advice._"
+        )
 
     if not content_id:
         if opportunity:
