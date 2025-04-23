@@ -49,7 +49,7 @@ const ContentFeed = () => {
             </span>
 
             <div className="prose prose-sm text-gray-700 mt-4 line-clamp-4">
-              </MD>
+              <MD>
                 {item.content?.slice(0, 480) + '...'}
               </MD>
             </div>

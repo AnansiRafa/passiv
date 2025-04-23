@@ -7,10 +7,11 @@ from .gpt import generate_content_for_asset, generate_content_for_crypto_asset
 from textblob import TextBlob
 import re
 import random
+from typing import Optional
 
 
 
-def choose_affiliate(opportunity=None, crypto_asset=None) -> AffiliateLink | None:
+def choose_affiliate(opportunity=None, crypto_asset=None) -> Optional["AffiliateLink"]:
     """Return a link whose description contains 'stock' or 'crypto'."""
     tag = "crypto" if crypto_asset else "stock"
     links = AffiliateLink.objects.filter(description__icontains=tag)
