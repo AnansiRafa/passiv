@@ -21,6 +21,7 @@ class ContentVersion(models.Model):
         related_name="content_versions"
     )
     content_id = models.CharField(max_length=255)  # e.g., "inv_AAPL_20250331"
+    title = models.CharField(max_length=255, blank=True)
     version = models.IntegerField()
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)

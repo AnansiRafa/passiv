@@ -7,6 +7,22 @@ from crypto.models import CryptoAsset
 
 
 
+def generate_headline(markdown_body: str) -> str:
+    prompt = (
+        "Give me a punchy, click-worthy headline (≤ 8 words, Title Case) "
+        "for the following stock/crypto analysis:\n\n"
+        f"{markdown_body[:1500]}"  # keep token cost low
+    )
+
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=12,
+        temperature=0.8,
+    )
+    return response.choices[0].message.content.strip().replace('"', "")
+
+
 def generate_content_for_asset(asset: InvestmentOpportunity) -> str:
     """
     Generate investment content using GPT-4o for the given InvestmentOpportunity.

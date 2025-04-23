@@ -3,7 +3,7 @@ from investment.models import InvestmentOpportunity
 from affiliate.models import AffiliateLink
 from crypto.models import CryptoAsset
 import json
-from .gpt import generate_content_for_asset, generate_content_for_crypto_asset
+from .gpt import generate_content_for_asset, generate_content_for_crypto_asset, generate_headline
 from textblob import TextBlob
 import re
 import random
@@ -64,7 +64,8 @@ def save_content_version(
     crypto_asset: CryptoAsset = None,
     content_id: str = None,
     changes: str = "",
-    metrics: dict = None
+    metrics: dict = None,
+    title: str = "",
 ) -> ContentVersion:
     metrics = metrics or {}
 
@@ -97,7 +98,8 @@ def save_content_version(
         opportunity=opportunity,
         crypto_asset=crypto_asset,
         changes=changes,
-        metrics=metrics
+        metrics=metrics,
+        title=title,
     )
 
 
@@ -109,7 +111,14 @@ def create_gpt_content_version(opportunity: InvestmentOpportunity) -> ContentVer
     content = generate_content_for_asset(opportunity)
     # print(content)
     metrics = calculate_content_metrics(content)
-    return save_content_version(content, opportunity, changes="Initial GPT generation", metrics=metrics)
+    headline = generate_headline(content)
+    return save_content_version(
+        content, 
+        opportunity, 
+        changes="Initial GPT generation", 
+        metrics=metrics, 
+        title=headline,
+    )
 
 
 def create_gpt_content_version_for_crypto(asset: CryptoAsset) -> ContentVersion:
@@ -118,6 +127,7 @@ def create_gpt_content_version_for_crypto(asset: CryptoAsset) -> ContentVersion:
     """
     content = generate_content_for_crypto_asset(asset)
     metrics = calculate_content_metrics(content)
+    headline = generate_headline(content)
 
     return save_content_version(
         content=content,
@@ -125,5 +135,6 @@ def create_gpt_content_version_for_crypto(asset: CryptoAsset) -> ContentVersion:
         crypto_asset=asset,
         content_id=f"crypto_{asset.symbol.upper()}",
         changes="Initial GPT crypto generation",
-        metrics=metrics
+        metrics=metrics,
+        title=headline,
     )
