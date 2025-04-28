@@ -79,10 +79,16 @@ def save_content_version(
     
     link = choose_affiliate(opportunity, crypto_asset)
     if link:
-        content += (
-            f"\n\n[Partner link]({link.url}) _(affiliate)_\n"
-            "_Disclosure: we may earn a commission; not financial advice._"
-        )
+        partner_line = f" Interested readers can explore our [partner resource]({link.url}) _(affiliate)_."
+        
+        # Find a soft injection point
+        paragraphs = content.split("\n\n")
+        if len(paragraphs) > 1:
+            paragraphs.insert(1, partner_line)
+        else:
+            paragraphs.append(partner_line)
+        
+        content = "\n\n".join(paragraphs)
 
     if not content_id:
         if opportunity:

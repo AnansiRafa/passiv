@@ -38,17 +38,13 @@ def _humorous_tail(subject: str) -> str:
     return "Our lawyer made us write this; your portfolio makes its own decisions."
 
 
-def inject_disclosures(body: str, subject: str) -> str:  # public API
+def inject_disclosures(body: str, subject: str) -> str:
     """
-    Append legal block + witty tail to a generated article body.
-
-    Parameters
-    ----------
-    body : str
-        The article markdown we’ve just created.
-    subject : str
-        Ticker (e.g., 'AAPL') or crypto symbol (e.g., 'ETH') for humorous context.
+    Append legal block and witty tail to the generated article body.
     """
     body = body.rstrip()
+    if "Not financial advice" in body:
+        return body
+
     tail = _humorous_tail(subject)
-    return f"{body}{_DISCLOSURE_BLOCK}{tail}\n"
+    return f"{body}{_DISCLOSURE_BLOCK}\n\n*{tail}*\n"
