@@ -25,3 +25,30 @@ class AffiliateInjectionTests(TestCase):
         opp = InvestmentOpportunity.objects.create(ticker="AAPL", opportunity_name="Apple", description="Test")
         cv = save_content_version(content="Body", opportunity=opp)
         self.assertIn("(affiliate)", cv.content)
+
+
+class DisclosureInjectionTests(TestCase):
+    def setUp(self):
+        self.opportunity = InvestmentOpportunity.objects.create(
+            ticker="DISC",
+            opportunity_name="Disclosure Test Opportunity",
+            description="Testing disclosure injection.",
+            data={}
+        )
+
+    def test_disclosure_injected_into_saved_content(self):
+        raw_body = "This is a simple content body for disclosure testing."
+
+        content_version = save_content_version(
+            content=raw_body,
+            opportunity=self.opportunity,
+            changes="Disclosure Injection Test",
+            metrics={"dummy_metric": 123},
+            title="Disclosure Test Title"
+        )
+
+        saved_content = content_version.content
+
+        self.assertIn("Not financial advice", saved_content)
+        self.assertIn("affiliate links", saved_content)
+        self.assertIn("This is a simple content body", saved_content)
