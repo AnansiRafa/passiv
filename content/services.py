@@ -74,6 +74,9 @@ def save_content_version(
 ) -> ContentVersion:
     metrics = metrics or {}
 
+    subject = opportunity.ticker if opportunity else (crypto_asset.symbol if crypto_asset else "Asset")
+    content = inject_disclosures(content, subject)
+    
     link = choose_affiliate(opportunity, crypto_asset)
     if link:
         content += (
