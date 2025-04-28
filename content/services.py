@@ -9,6 +9,11 @@ import re
 import random
 from typing import Optional
 
+from .gpt import (
+    generate_content_for_asset,
+    generate_content_for_crypto_asset,
+)
+from .utils import inject_disclosures
 
 
 def choose_affiliate(opportunity=None, crypto_asset=None) -> Optional["AffiliateLink"]:

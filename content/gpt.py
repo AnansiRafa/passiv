@@ -7,6 +7,25 @@ from crypto.models import CryptoAsset
 
 
 
+def chat_completion(
+    prompt: str,
+    *,
+    model: str = "gpt-4o-mini",
+    max_tokens: int = 40,
+   temperature: float = 0.7,
+) -> str:
+    """
+    Return the assistant’s reply *content* only.  Keeps callers terse.
+    """
+    resp = client.chat.completions.create(
+        model=model,
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=max_tokens,
+        temperature=temperature,
+    )
+    return resp.choices[0].message.content.strip()
+
+
 def generate_headline(markdown_body: str) -> str:
     prompt = (
         "Give me a punchy, click-worthy headline (≤ 8 words, Title Case) "
