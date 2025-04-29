@@ -49,10 +49,12 @@ def generate_content_for_asset(asset: InvestmentOpportunity) -> str:
     """
 
     system_prompt = (
-        "You are a skilled financial content writer. Write an informative, engaging, "
+        "You are a skilled financial content writer with a subtle sense of humor. Write an informative, engaging, "
         "and easy-to-understand investment summary about the following asset. "
-        "Use a confident and professional tone suitable for an investing newsletter, "
-        "but do not offer specific financial advice or recommendations."
+        "Use a confident and professional tone suitable for an investing newsletter. "
+        "Subtly mention that readers can explore a trusted partner resource for more information "
+        "(do not hard-sell, keep it professional). Avoid first-person language. "
+        "Do not offer specific financial advice or stock recommendations."
     )
 
     user_prompt = (
@@ -65,15 +67,20 @@ def generate_content_for_asset(asset: InvestmentOpportunity) -> str:
     if asset.data:
         user_prompt += f"Additional Data: {asset.data}\n"
 
-    response = client.chat.completions.create(model="gpt-4o",
-    messages=[
-        {"role": "system", "content": system_prompt},
-        {"role": "user", "content": user_prompt}
-    ],
-    temperature=0.7,
-    max_tokens=1024)
+    response = client.chat.completions.create(
+        model="gpt-4o",
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt}
+        ],
+        temperature=0.7,
+        max_tokens=1024
+    )
 
-    return response.choices[0].message.content.strip()
+    body = response.choices[0].message.content.strip()
+
+    return body
+
 
 
 def generate_content_for_crypto_asset(asset: CryptoAsset) -> str:
@@ -83,9 +90,11 @@ def generate_content_for_crypto_asset(asset: CryptoAsset) -> str:
     """
 
     system_prompt = (
-        "You are a skilled crypto analyst and financial writer. "
+        "You are a skilled crypto analyst and financial writer with a subtle sense of humor."
         "Write a high-quality investment summary for the following cryptocurrency. "
-        "Include its utility, market rank, and broader significance. "
+        "Explain its utility, market rank, and broader significance. "
+        "Subtly mention that readers can explore a trusted partner resource for more insights "
+        "(no hard selling). Maintain a neutral and professional tone. "
         "Avoid offering financial advice."
     )
 
@@ -108,4 +117,6 @@ def generate_content_for_crypto_asset(asset: CryptoAsset) -> str:
         max_tokens=1024
     )
 
-    return response.choices[0].message.content.strip()
+    body = response.choices[0].message.content.strip()
+
+    return body

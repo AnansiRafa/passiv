@@ -13,7 +13,7 @@ from .gpt import (
     generate_content_for_asset,
     generate_content_for_crypto_asset,
 )
-from .utils import inject_disclosures
+from .utils import inject_disclosures, inject_humor_into_body
 
 
 def choose_affiliate(opportunity=None, crypto_asset=None) -> Optional["AffiliateLink"]:
@@ -21,6 +21,21 @@ def choose_affiliate(opportunity=None, crypto_asset=None) -> Optional["Affiliate
     tag = "crypto" if crypto_asset else "stock"
     links = AffiliateLink.objects.filter(description__icontains=tag)
     return random.choice(links) if links.exists() else None
+
+
+def inject_partner_link(content: str, link_url: str) -> str:
+    """
+    Replace a soft partner resource mention with a real clickable markdown link.
+    """
+    if "partner resource" in content:
+        return content.replace(
+            "trusted partner resource",
+            f"[trusted partner resource]({link_url}) _(affiliate)_"
+        ).replace(
+            "partner resource",
+            f"[partner resource]({link_url}) _(affiliate)_"
+        )
+    return content
 
 
 def generate_content(opportunity: InvestmentOpportunity) -> str:
@@ -72,23 +87,14 @@ def save_content_version(
     metrics: dict = None,
     title: str = "",
 ) -> ContentVersion:
+    """
+    Save a fully prepared ContentVersion.
+    Assumes humor and partner mentions are already baked into the body upstream.
+    """
     metrics = metrics or {}
 
-    subject = opportunity.ticker if opportunity else (crypto_asset.symbol if crypto_asset else "Asset")
-    content = inject_disclosures(content, subject)
-    
-    link = choose_affiliate(opportunity, crypto_asset)
-    if link:
-        partner_line = f" Interested readers can explore our [partner resource]({link.url}) _(affiliate)_."
-        
-        # Find a soft injection point
-        paragraphs = content.split("\n\n")
-        if len(paragraphs) > 1:
-            paragraphs.insert(1, partner_line)
-        else:
-            paragraphs.append(partner_line)
-        
-        content = "\n\n".join(paragraphs)
+    # Inject disclosure block LAST (after all organic content mutations)
+    content = inject_disclosures(content)
 
     if not content_id:
         if opportunity:
@@ -120,26 +126,39 @@ def save_content_version(
 
 def create_gpt_content_version(opportunity: InvestmentOpportunity) -> ContentVersion:
     """
-    Generates GPT-powered content, calculates metrics, and stores a new content version.
+    Generates GPT-powered content, injects humor, calculates metrics, stores a new content version.
     """
     content = generate_content_for_asset(opportunity)
-    # print(content)
+    subject = opportunity.ticker
+
+    content = inject_humor_into_body(content, subject)  # Humor inserted after intro paragraph
+
+    link = choose_affiliate(opportunity, None)
+    if link:
+        content = inject_partner_link(content, link.url)
+
     metrics = calculate_content_metrics(content)
     headline = generate_headline(content)
+
     return save_content_version(
-        content, 
-        opportunity, 
-        changes="Initial GPT generation", 
-        metrics=metrics, 
+        content,
+        opportunity,
+        changes="Initial GPT generation",
+        metrics=metrics,
         title=headline,
     )
 
 
 def create_gpt_content_version_for_crypto(asset: CryptoAsset) -> ContentVersion:
-    """
-    Generate and store GPT-powered content for a CryptoAsset.
-    """
     content = generate_content_for_crypto_asset(asset)
+    subject = asset.symbol
+
+    content = inject_humor_into_body(content, subject)
+
+    link = choose_affiliate(None, asset)
+    if link:
+        content = inject_partner_link(content, link.url)
+
     metrics = calculate_content_metrics(content)
     headline = generate_headline(content)
 
