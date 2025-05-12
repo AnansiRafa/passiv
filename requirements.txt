@@ -29,3 +29,4 @@ pytest-django
 django-cors-headers
 textblob>=0.18
 
+freezegun==1.2.2
