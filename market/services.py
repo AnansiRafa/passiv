@@ -24,7 +24,7 @@ def get_market_status() -> str:
         t >= datetime.strptime("04:00", "%H:%M").time()
         and t < datetime.strptime("09:30", "%H:%M").time()
     ):
-        return "pre_market"
+        return "closed"
     if (
         t >= datetime.strptime("09:30", "%H:%M").time()
         and t < datetime.strptime("16:00", "%H:%M").time()
@@ -34,7 +34,7 @@ def get_market_status() -> str:
         t >= datetime.strptime("16:00", "%H:%M").time()
         and t < datetime.strptime("20:00", "%H:%M").time()
     ):
-        return "after_hours"
+        return "closed"
     return "closed"
 
 
